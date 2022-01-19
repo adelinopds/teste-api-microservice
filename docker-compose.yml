@@ -1,0 +1,48 @@
+version: '3.4'
+services:
+  student-services:
+    build: 
+      context: .
+    container_name: student-service
+    ports:
+      - "5002:3000"
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgres://db:5001/arch-school
+    depends_on:
+      - db
+    volumes:
+      -.:/home/student-service
+  teacher-services:
+    build: 
+      context: .
+    container_name: teacher-service
+    ports:
+      - "5003:3000"
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgres://db:5001/arch-school
+    depends_on:
+      - db
+    volumes:
+      - .:/home/teacher-service
+  db:
+    image: postgres:latest
+    container_name: "database-service"
+    restart: always
+    environment:
+      POSTGRES_DB: arch-school    
+      POSTGRES_USER: archuser
+      POSTGRES_PASSWORD: arch3221
+    logging:
+          options:
+            max-size: 10m
+            max-file: "3"
+    ports:
+      - "5001:5432"
+    volumes:
+      - database:/var/lib/postgresql/data
+  volumes:
+    database:
